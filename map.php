@@ -1,0 +1,22 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>Bintangtrack imei Tracker</title>
+<style type="text/css">
+body { font: normal 10pt Helvetica, Arial; }
+#map_kendaraan { width: 845px; height: 315px; border: 0px; padding: 0px; }
+</style>
+<script src="http://maps.google.com/maps/api/js?v=3&sensor=false" type="text/javascript"></script>
+<script type="text/javascript">
+var customicon=new google.maps.MarkerImage("http://bintangtrack.com/track/images/bpgroup.png",new google.maps.Size(45,32),new google.maps.Point(0,0),new google.maps.Point(16,32));var map=[];function initialize_vehicle(){var mapOptions={mapTypeControl:true,mapTypeControlOptions:{style:google.maps.MapTypeControlStyle.HORIZONTAL_BAR},scaleControl:true,overviewMapControl:true,overviewMapControlOptions:{opened:true},streetViewControl:false};map=new google.maps.Map(document.getElementById('map_kendaraan'),mapOptions);var infoWindow=new google.maps.InfoWindow;var imei=document.getElementById('imei').value;downloadUrl("xml_geturl.php?imei="+imei,function(data){var xml=data.responseXML;var markers=xml.documentElement.getElementsByTagName("marker");var points=xml.documentElement.getElementsByTagName("point");var path=[];for(var i=0;i<markers.length;i++){var nopol=markers[i].getAttribute("nopol");var waktu=markers[i].getAttribute("waktu");var kondisi=markers[i].getAttribute("kondisi");var kode=markers[i].getAttribute("kode");var kec=markers[i].getAttribute("kecepatan");var status=markers[i].getAttribute("status");var mesin=markers[i].getAttribute("mesin");var dut=markers[i].getAttribute("sudut");var jar=markers[i].getAttribute("jarak");var bbm=markers[i].getAttribute("bbm");var temp=markers[i].getAttribute("temp");var lat=parseFloat(markers[i].getAttribute("lat"));var lng=parseFloat(markers[i].getAttribute("lng"));var point=new google.maps.LatLng(lat,lng);path.push(point);if(mesin=="7"){var eng="Status Engine&nbsp;:&nbsp;<font color='green'><b>ON</b></font>"}else if(mesin=="8"){var eng="Status Engine&nbsp;:&nbsp;<font color='red'><b>OFF</b></font>"}else{var eng="Status Engine&nbsp;:&nbsp;<b>Unknown</b>"}var alamat=markers[i].getAttribute("alamat");var keterangan="<p><b>"+nopol+"</b><br>"+waktu+"<br>"+alamat+"<br>"+eng+"<br>Speed&nbsp;:&nbsp;"+kec+"&nbsp;km</p>";var marker=new google.maps.Marker({position:point,map:map,icon:customicon,optimized:false});infoWindow.setContent(keterangan);infoWindow.open(map,marker);bindInfoWindow(marker,map,infoWindow,keterangan,point)}map.setOptions({maxZoom:17});var latlngbounds=new google.maps.LatLngBounds();for(var i=0;i<path.length;i++){latlngbounds.extend(path[i])}map.fitBounds(latlngbounds)});var trafficLayer=new google.maps.TrafficLayer();trafficLayer.setMap(map);var homeControlDiv=document.createElement('div');var homeControl=new HomeControl(homeControlDiv,map);homeControlDiv.index=1;map.controls[google.maps.ControlPosition.TOP_LEFT].push(homeControlDiv)}function bindInfoWindow(marker,map,infoWindow,keterangan,point){google.maps.event.addListener(marker,'mouseover',function(){infoWindow.setContent(keterangan);infoWindow.open(map,marker)});google.maps.event.addListener(marker,'click',function(){var position=marker.getPosition();map.setCenter(position);infoWindow.close()})}function HomeControl(controlDiv,map){controlDiv.style.padding='5px';var controlUI_1=document.createElement('div');controlUI_1.style.backgroundColor='white';controlUI_1.style.borderStyle='solid';controlUI_1.style.borderWidth='2px';controlUI_1.style.cursor='pointer';controlUI_1.style.textAlign='center';controlDiv.appendChild(controlUI_1);var controlImage_1=document.createElement('img');controlImage_1.src="refresh.gif";controlImage_1.title="Refresh";controlUI_1.appendChild(controlImage_1);google.maps.event.addDomListener(controlUI_1,'click',function(){initialize_vehicle()})}function downloadUrl(url,callback){var request=window.ActiveXObject?new ActiveXObject('Microsoft.XMLHTTP'):new XMLHttpRequest;request.onreadystatechange=function(){if(request.readyState==4){request.onreadystatechange=doNothing;callback(request,request.status)}};request.open('GET',url,true);request.send(null)}function doNothing(){}
+</script>
+</head>
+
+	<body onload="initialize_vehicle()" style="margin:0px; border:0px; padding:0px;">
+	<?
+	$imei = $_REQUEST['imei'];
+	echo "<input type=hidden id=imei value=$imei>";
+	?>
+	<div id="map_kendaraan"></div>
+	</body>
+</html>
